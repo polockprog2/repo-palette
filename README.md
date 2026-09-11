@@ -115,5 +115,7 @@ and why.
 
 ## Demonstration
 
-[Hosted versions and recordings will be linked here — or run the `npm run dev`
-steps above to see it live in about thirty seconds.]
+**Live demo:** https://polockprog2.github.io/repo-palette/
+
+It runs the production build served from the `gh-pages` branch. Alternatively,
+`npm run dev` runs it locally in about thirty seconds.
