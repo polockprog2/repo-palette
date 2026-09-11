@@ -5,6 +5,7 @@ const RESULTS_PER_PAGE = 8
 const DEBOUNCE_MS = 300
 const RECENT_KEY = 'repo-palette:recent'
 const MAX_RECENT = 5
+const THEME_KEY = 'repo-palette:theme'
 
 function loadRecent() {
   try {
@@ -19,6 +20,27 @@ function loadRecent() {
 function saveRecent(recent) {
   try {
     localStorage.setItem(RECENT_KEY, JSON.stringify(recent))
+  } catch {
+    /* storage may be unavailable; the palette still works */
+  }
+}
+
+const prefersDark = () =>
+  window.matchMedia('(prefers-color-scheme: dark)').matches
+
+function loadTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY)
+    if (saved === 'light' || saved === 'dark') return saved
+  } catch {
+    /* fall through to system preference */
+  }
+  return prefersDark() ? 'dark' : 'light'
+}
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme)
   } catch {
     /* storage may be unavailable; the palette still works */
   }
@@ -41,6 +63,17 @@ function Highlight({ text, query }) {
   )
 }
 
+function ThemeToggle({ theme, onToggle }) {
+  return (
+    <button
+      className="theme-toggle"
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      onClick={onToggle}
+    />
+  )
+}
+
 function openRepo(url, newTab) {
   if (newTab) {
     window.open(url, '_blank', 'noopener')
@@ -52,6 +85,21 @@ function openRepo(url, newTab) {
 export default function App() {
   const triggerRef = useRef(null)
   const [open, setOpen] = useState(false)
+  const [theme, setTheme] = useState(loadTheme)
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    saveTheme(theme)
+  }, [theme])
+
+  useEffect(() => {
+    const mql = window.matchMedia('(prefers-color-scheme: dark)')
+    function onSystemChange() {
+      setTheme(loadTheme())
+    }
+    mql.addEventListener('change', onSystemChange)
+    return () => mql.removeEventListener('change', onSystemChange)
+  }, [])
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -90,6 +138,7 @@ export default function App() {
             <Shortcut>Ctrl</Shortcut> <Shortcut>K</Shortcut>
           </span>
         </button>
+        <ThemeToggle theme={theme} onToggle={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))} />
       </header>
 
       <main className="content">
