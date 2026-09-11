@@ -367,6 +367,7 @@ function Row({ index, selected, query, repo, onMouseEnter, onMouseDown, onClick 
         </span>
         {repo.description && <span className="row-desc">{repo.description}</span>}
       </span>
+      {repo.language && <span className="row-lang">{repo.language}</span>}
       {repo.stars > 0 && (
         <span className="row-stars" title="Stars">
           &#9733; {repo.stars >= 1000 ? `${(repo.stars / 1000).toFixed(1)}k` : repo.stars}
@@ -446,6 +447,7 @@ function strip(repo) {
     full_name: repo.full_name,
     description: repo.description,
     stars: repo.stargazers_count,
+    language: repo.language,
     url: repo.html_url,
   }
 }
