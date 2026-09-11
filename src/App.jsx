@@ -172,6 +172,7 @@ function Palette({ onClose }) {
   const [errorMsg, setErrorMsg] = useState('')
   const [selected, setSelected] = useState(0)
   const [recent, setRecent] = useState(loadRecent)
+  const [sortBy, setSortBy] = useState('stars') // stars | best
 
   const visible = status === 'idle' ? recent : items
 
@@ -199,7 +200,8 @@ function Palette({ onClose }) {
 
     async function run() {
       try {
-        const url = `${API}?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=${RESULTS_PER_PAGE}`
+        const sortParam = sortBy === 'stars' ? '&sort=stars&order=desc' : ''
+        const url = `${API}?q=${encodeURIComponent(q)}${sortParam}&per_page=${RESULTS_PER_PAGE}`
         const res = await fetch(url)
         if (cancelled) return
         if (!res.ok) {
@@ -228,7 +230,7 @@ function Palette({ onClose }) {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [query])
+  }, [query, sortBy])
 
   useEffect(() => {
     setSelected((s) => {
@@ -337,6 +339,16 @@ function Palette({ onClose }) {
         </div>
 
         <footer className="footer">
+          <button
+            type="button"
+            className="sort-btn"
+            onClick={() => setSortBy((s) => (s === 'stars' ? 'best' : 'stars'))}
+            disabled={status !== 'success'}
+            title="Switch result ordering"
+          >
+            Sort: {sortBy === 'stars' ? 'most stars' : 'best match'}
+          </button>
+          <span className="footer-spacer" aria-hidden="true" />
           <span><Shortcut>&#8593;</Shortcut> <Shortcut>&#8595;</Shortcut> navigate</span>
           <span><Shortcut>Enter</Shortcut> open in new tab</span>
           <span><Shortcut>Shift</Shortcut> <Shortcut>Enter</Shortcut> same tab</span>
