@@ -244,9 +244,9 @@ function Palette({ onClose }) {
     el?.scrollIntoView({ block: 'nearest' })
   }, [selected])
 
-  function choose(repo) {
+  function choose(repo, newTab = true) {
     pushRecent(repo)
-    openRepo(repo.url, true)
+    openRepo(repo.url, newTab)
     onClose()
   }
 
@@ -273,7 +273,7 @@ function Palette({ onClose }) {
         return
       }
       const repo = visible[selected]
-      if (repo) choose(repo)
+      if (repo) choose(repo, !e.shiftKey)
     } else if (e.key === 'Escape') {
       e.preventDefault()
       onClose()
@@ -339,6 +339,7 @@ function Palette({ onClose }) {
         <footer className="footer">
           <span><Shortcut>&#8593;</Shortcut> <Shortcut>&#8595;</Shortcut> navigate</span>
           <span><Shortcut>Enter</Shortcut> open in new tab</span>
+          <span><Shortcut>Shift</Shortcut> <Shortcut>Enter</Shortcut> same tab</span>
           <span><Shortcut>Esc</Shortcut> close</span>
         </footer>
       </div>
